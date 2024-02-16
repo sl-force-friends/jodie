@@ -15,10 +15,12 @@ import tab_add_jd
 import tab_feedback
 import tab_rewrite_jd
 from utils.st_utils import (
+    disclaimer,
     initialise_session_states,
+    last_update,
     set_app_config,
     set_custom_css
-)
+    )
 from utils.config import (
     APP_TITLE,
     TAB_NAMES
@@ -28,15 +30,23 @@ initialise_session_states()
 set_app_config()
 set_custom_css()
 
-st.subheader(APP_TITLE)
+if st.session_state["read_terms"] is False:
+    last_update()
+    disclaimer()
+    if st.button("Accept"):
+        st.session_state["read_terms"] = True
+        st.rerun()
 
-tab1, tab2, tab3 = st.tabs(TAB_NAMES)
+else:
+    st.subheader(APP_TITLE)
 
-with tab1:
-    tab_add_jd.generate_view()
+    tab1, tab2, tab3 = st.tabs(TAB_NAMES)
 
-with tab2:
-    tab_feedback.generate_view()
+    with tab1:
+        tab_add_jd.generate_view()
 
-with tab3:
-    tab_rewrite_jd.generate_view()
+    with tab2:
+        tab_feedback.generate_view()
+
+    with tab3:
+        tab_rewrite_jd.generate_view()
