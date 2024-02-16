@@ -3,9 +3,9 @@ app.py
 """
 import streamlit as st
 
-import add_jd_page
-import feedback_page
-import rewrite_page
+import tab_add_jd
+import tab_feedback
+import tab_rewrite_jd
 from utils.st_utils import (
     initialise_session_states,
     set_app_config,
@@ -25,10 +25,10 @@ st.subheader(APP_TITLE)
 tab1, tab2, tab3 = st.tabs(TAB_NAMES)
 
 with tab1:
-    add_jd_page.generate_view()
+    tab_add_jd.generate_view()
 
 with tab2:
-    feedback_page.generate_view()
+    tab_feedback.generate_view()
 
 with tab3:
-    rewrite_page.generate_view()
+    tab_rewrite_jd.generate_view()
