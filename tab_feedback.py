@@ -93,6 +93,7 @@ async def check_job_title(box, title, description):
         messages=[{"role": "user", 
                    "content": f"Check if this job description for {title} matches the title. Else, provide alternative suggestions. Here is the description: {description}"}],
         response_model=TitleCheck,
+        max_retries=5,
         seed=0,
         temperature=0
     )
@@ -105,6 +106,7 @@ async def check_job_title(box, title, description):
         messages=[{"role": "user", 
                    "content": f"Provide alternative job titles for this job description delimited by ###. Do not use {title}. Here is the job description: ### {description}"}],
         response_model=AlternativeTitles,
+        max_retries=5,
         seed=0,
         temperature=0
         )
@@ -123,6 +125,7 @@ async def check_positive_content(boxA, boxB, title, description):
         messages=[{"role": "user", 
                    "content": f"Check the contents of this job description for {title}: {description}"}],
         response_model=PositiveContentCheck,
+        max_retries=5,
         seed=0,
         temperature=0,
     )
@@ -158,6 +161,7 @@ async def check_negative_content(box, title, description):
         messages=[{"role": "user", 
                    "content": f"Check the contents of this job description for {title}: {description}"}],
         response_model=NegativeContentCheck,
+        max_retries=5,
         seed=0,
         temperature=0,
     )
