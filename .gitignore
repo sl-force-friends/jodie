@@ -318,3 +318,8 @@ pyrightconfig.json
 .streamlit/secrets.toml
 
 *.pdf
+
+bin/
+share/
+etc/
+pyvenv.cfg
