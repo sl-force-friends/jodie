@@ -9,6 +9,7 @@ import chromadb
 import instructor
 import streamlit as st
 from openai import AsyncAzureOpenAI, AzureOpenAI
+import tab_rewrite_jd
 
 from utils.prompts import (
     TitleCheck,
@@ -38,25 +39,26 @@ def generate_view():
     """
     Generate the view for the feedback tab
     """
-    if (st.session_state['user_title'] is None) and (st.session_state['user_desc'] is None):
-        st.warning("Please enter your job description first", icon="⚠️")
-        return None
+    # if (st.session_state['user_title'] is None) and (st.session_state['user_desc'] is None):
+    #     st.warning("Please enter your job description first", icon="⚠️")
+    #     return None
     
-    button = st.empty()
+    # button = st.empty()
 
-    if button.button("Generate Feedback"):
-        button.empty()
-        col1, col2 = st.columns([1, 2])
-        col1.subheader("1. Job Title Check")
-        title_box = col1.empty()
-        col1.subheader("2. Content Check")
-        present_content_box = col1.empty()
-        missing_content_box = col1.empty()
-        to_remove_content_box = col1.empty()
-        col2.subheader("3. Job Design Suggestions")
-        recommendations_box = col2.empty()
-        asyncio.run(main(title_box, present_content_box, missing_content_box, to_remove_content_box, recommendations_box, st.session_state["user_title"], st.session_state["user_desc"]))
-        st.session_state["generated_ai_feedback"] = True
+    # # if button.button("Generate Feedback"):
+    # button.empty()
+    col1, col2 = st.columns([1, 2])
+    col1.subheader("1. Job Title Check")
+    title_box = col1.empty()
+    col1.subheader("2. Content Check")
+    present_content_box = col1.empty()
+    missing_content_box = col1.empty()
+    to_remove_content_box = col1.empty()
+    col2.subheader("3. Job Design Suggestions")
+    recommendations_box = col2.empty()
+    asyncio.run(main(title_box, present_content_box, missing_content_box, to_remove_content_box, recommendations_box, st.session_state["user_title"], st.session_state["user_desc"]))
+    st.session_state["generated_ai_feedback"] = True
+    # tab_rewrite_jd.generate_view()
 
         # st.subheader("4. Feedback")
         # st.info("**Scoring System:** 1 = Not useful, 5 = Very useful")

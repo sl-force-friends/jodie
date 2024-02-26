@@ -5,12 +5,18 @@ import time
 import streamlit as st
 from openai import AzureOpenAI
 
+import tab_feedback
+
 from utils.prompts import REWRITE_SYSTEM_MESSAGE
 from typing import Iterable
 from utils.config import (
     API_KEY,
     AZURE_ENDPOINT,
     API_VERSION
+    )
+from utils.config import (
+    APP_TITLE,
+    TAB_NAMES
     )
 
 client = AzureOpenAI(api_key=API_KEY,
@@ -21,19 +27,21 @@ def generate_view():
     """
     Generate the view for the re-write tab
     """
+
     if (st.session_state['user_title'] is None) and (st.session_state['user_desc'] is None):
         st.warning("Please enter your job description first", icon="⚠️")
         return None
     
-    if not st.session_state["generated_ai_feedback"]:
-        st.warning("Please generate the AI feedback first", icon="⚠️")
-        return None
+    # if not st.session_state["generated_ai_feedback"]:
+    #     st.warning("Please generate the AI feedback first", icon="⚠️")
+    #     return None
         
     button = st.empty()
 
     if button.button("Rewrite"):
         button.empty()
-        st.write("**Rewritten Job Description**")
+        tab_feedback.generate_view()
+        st.subheader("4. Job Description Rewrite")
         _rewrite(st.session_state["user_title"], st.session_state["user_desc"])
 
         with st.expander("Copy to Clipboard"):
