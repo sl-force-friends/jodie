@@ -16,7 +16,7 @@ def set_app_config() -> None:
     st.set_page_config(
         page_title="jodie",
         page_icon="🔎",
-        layout="wide",
+        layout="centered",
     )
 
 def set_custom_css() -> None:
