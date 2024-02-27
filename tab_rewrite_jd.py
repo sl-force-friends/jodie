@@ -3,6 +3,7 @@ tab_rewrite_jd.py
 """
 import time
 import streamlit as st
+import difflib
 from openai import AzureOpenAI
 
 import tab_feedback
@@ -16,7 +17,7 @@ from utils.config import (
     )
 from utils.config import (
     APP_TITLE,
-    TAB_NAMES
+    # TAB_NAMES
     )
 
 client = AzureOpenAI(api_key=API_KEY,
@@ -46,6 +47,12 @@ def generate_view():
 
         with st.expander("Copy to Clipboard"):
             st.write(f" ``` {_add_line_breaks(st.session_state['ai_rewrite'])}")
+
+        diff_changes = highlight_changes(st.session_state["user_desc"], st.session_state["ai_rewrite"])
+
+        st.markdown(diff_changes, unsafe_allow_html=True)
+
+        
 
         # RATING
         # st.subheader("Feedback")
@@ -94,3 +101,33 @@ def _add_line_breaks(text, length=150):
                 current_line = word + " "
         new_lines.append(current_line.strip())
     return "\n".join(new_lines)
+
+def highlight_changes(original_text, edited_text):
+    # Split the texts into lines for comparison
+    original_lines = original_text.splitlines()
+    edited_lines = edited_text.splitlines()
+    
+    # Get the differences between the original and edited texts
+    differ = difflib.Differ()
+    diff = list(differ.compare(original_lines, edited_lines))
+    
+    # Create HTML to highlight changes
+    highlighted_lines = []
+    for line in diff:
+        if line.startswith('+'):
+            # Addition: highlight in green
+            highlighted_lines.append(f'<span style="color:green">{line[2:]}</span>')
+        elif line.startswith('-'):
+            # Deletion: highlight in red
+            highlighted_lines.append(f'<span style="color:grey">{line[2:]}</span>')
+        elif line.startswith('?'):
+            # Common line: no highlight
+            highlighted_lines.append(line[2:])
+        else:
+            # Common line: no highlight
+            highlighted_lines.append(line)
+    
+    # Join the lines back together
+    highlighted_text = '\n'.join(highlighted_lines)
+    
+    return highlighted_text

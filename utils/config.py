@@ -6,7 +6,7 @@ import os
 import streamlit as st
 
 APP_TITLE = "🔎 jodie \n **:blue[Jo]b :blue[D]escription :blue[I]ntelligent :blue[E]nhancer**"
-TAB_NAMES = ["1️⃣ **Enter JD**", "2️⃣ **AI Feedback**", "3️⃣ **AI Written JD**"]
+# TAB_NAMES = ["1️⃣ **Enter JD**", "2️⃣ **AI Feedback**", "3️⃣ **AI Written JD**"] //tabs removed for better experience
 
 API_KEY = st.secrets["JODIE_API_KEY"]
 AZURE_ENDPOINT = st.secrets["JODIE_ENDPOINT"]

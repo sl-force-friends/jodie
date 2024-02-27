@@ -24,7 +24,7 @@ from utils.st_utils import (
     )
 from utils.config import (
     APP_TITLE,
-    TAB_NAMES
+    # TAB_NAMES
     )
 
 initialise_session_states()
@@ -52,7 +52,7 @@ else:
     # with tab3:
     #     tab_rewrite_jd.generate_view()
 
-    st.write(TAB_NAMES[0])
+    # st.write(TAB_NAMES[0])
     tab_add_jd.generate_view()
 
     # st.write(TAB_NAMES[1])
