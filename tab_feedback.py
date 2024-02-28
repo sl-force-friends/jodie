@@ -48,14 +48,30 @@ def generate_view():
     # # if button.button("Generate Feedback"):
     # button.empty()
     row1 = st.container()
-    row1.subheader("1. Job Title Check")
+    row1.markdown("""
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 24px;; margin: 2px;">
+        <strong>1. Job Title Check</strong>
+    </div>
+    """,
+    unsafe_allow_html=True)
     title_box = row1.empty()
-    row1.subheader("2. Content Check")
+    row1.markdown("""
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 24px;; margin: 2px;">
+        <strong>2. Content Check</strong>
+    </div>
+    """,
+    unsafe_allow_html=True)
     present_content_box = row1.empty()
     missing_content_box = row1.empty()
     to_remove_content_box = row1.empty()
     row2 = st.container()
-    row2.subheader("3. Job Design Suggestions")
+    row2.markdown("""
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 24px;; margin: 2px;">
+        <strong>3. Job Design Suggestions</strong>
+    </div>
+    """,
+    unsafe_allow_html=True)
+    # row2.subheader("3. Job Design Suggestions")
     recommendations_box = row2.empty()
     asyncio.run(main(title_box, present_content_box, missing_content_box, to_remove_content_box, recommendations_box, st.session_state["user_title"], st.session_state["user_desc"]))
     st.session_state["generated_ai_feedback"] = True
