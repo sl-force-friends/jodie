@@ -56,7 +56,7 @@ def initialise_session_states() -> None:
             st.session_state[session_state] = False
 
 def disclaimer():
-    st.title("🔎 jodie ")
+    st.title("🔎 JODIE ")
     st.subheader("**:blue[Jo]b :blue[D]escription :blue[I]ntelligent :blue[E]nhancer**")
     st.info("This application is by powered by a Large Language Model (LLMs) and you can use it to generate job posting suggestions. \n \n Treat this as a helpful AI assistant that can provide initial ideas for you to refine. Never trust the responses at face value. If in doubt, don't use the given response.", icon="👋")
     st.info("Your prompts will not be stored by commercial vendors, but may be logged to improve our services. This tool is only for job descriptions.", icon="🚨")

@@ -11,7 +11,10 @@ def generate_view() -> None:
     """
     Create the view for the generate feedback tab
     """
-    with st.expander("**(Optional) Import from MCF**"):
+    st.session_state['user_title'] = st.text_input("**Title**", value=st.session_state["title_placeholder"])
+    st.session_state['user_desc'] = st.text_area("**Description**", value=st.session_state["desc_placeholder"], height=300)
+
+    with st.expander("**Click to Import Job Description details with MCF Job Posting URL**"):
         st.session_state['mcf_url'] = st.text_input(label="**Enter a valid MCF URL**")
 
         if st.button("Import from MCF"):
@@ -22,9 +25,7 @@ def generate_view() -> None:
             except (urllib3.exceptions.HTTPError, AttributeError, ValueError):
                 st.warning("Error. Please check if you have entered a valid MCF URL", icon="⚠️")
 
-    st.session_state['user_title'] = st.text_input("**Title**", value=st.session_state["title_placeholder"])
-    st.session_state['user_desc'] = st.text_area("**Description**", value=st.session_state["desc_placeholder"], height=300)
-
+    
 def _get_mcf_job(mcf_url):
     """
     Pulls job from MCF

@@ -36,7 +36,7 @@ def generate_view():
     # if not st.session_state["generated_ai_feedback"]:
     #     st.warning("Please generate the AI feedback first", icon="⚠️")
     #     return None
-        
+
     button = st.empty()
 
     if button.button("Rewrite with AI", use_container_width=True, type='primary'):
