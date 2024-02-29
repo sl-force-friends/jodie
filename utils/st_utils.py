@@ -9,6 +9,11 @@ from utils.config import (
     SESSION_STATE_DEFAULT_FALSE
     )
 
+from utils.config import (
+    APP_TITLE,
+    FULL_APP_TITLE
+    )
+
 def set_app_config() -> None:
     """
     Agg configurations
@@ -56,8 +61,8 @@ def initialise_session_states() -> None:
             st.session_state[session_state] = False
 
 def disclaimer():
-    st.title("🔎 JODIE ")
-    st.subheader("**:blue[Jo]b :blue[D]escription :blue[I]ntelligent :blue[E]nhancer**")
+    st.title(APP_TITLE)
+    st.markdown(FULL_APP_TITLE, unsafe_allow_html=True)
     st.info("This application is by powered by a Large Language Model (LLMs) and you can use it to generate job posting suggestions. \n \n Treat this as a helpful AI assistant that can provide initial ideas for you to refine. Never trust the responses at face value. If in doubt, don't use the given response.", icon="👋")
     st.info("Your prompts will not be stored by commercial vendors, but may be logged to improve our services. This tool is only for job descriptions.", icon="🚨")
     st.info("By using this service, you acknowledge you recognise the possibility of AI generating inaccurate responses, and you take full responsibility over how you use the generated output.", icon="🤝")

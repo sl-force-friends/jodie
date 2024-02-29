@@ -24,7 +24,7 @@ from utils.st_utils import (
     )
 from utils.config import (
     APP_TITLE,
-    # TAB_NAMES
+    FULL_APP_TITLE
     )
 
 initialise_session_states()
@@ -41,14 +41,7 @@ if st.session_state["read_terms"] is False:
 else:
     st.subheader(APP_TITLE)
 
-    formatted_text = """
-    **<span style='color: #cf008a; font-size: 24px;'>[Jo]</span>b 
-    <span style='color: #cf008a; font-size: 24px;'>[D]</span>escription 
-    <span style='color: #cf008a; font-size: 24px;'>[I]</span>ntelligent 
-    <span style='color: #cf008a; font-size: 24px;'>[E]</span>nhancer**
-    """
-
-    st.markdown(formatted_text, unsafe_allow_html=True)
+    st.markdown(FULL_APP_TITLE, unsafe_allow_html=True)
     
 
     # tab1, tab2, tab3 = st.tabs(TAB_NAMES)
