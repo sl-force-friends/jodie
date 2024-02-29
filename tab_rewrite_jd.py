@@ -42,7 +42,13 @@ def generate_view():
     if button.button("Rewrite with AI", use_container_width=True, type='primary'):
         button.empty()
         tab_feedback.generate_view()
-        st.subheader("4. Job Description Rewrite")
+        st.markdown("""
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 20px;; margin: 2px;">
+            <strong>Job Description Rewrite</strong>
+        </div>
+        """,
+        unsafe_allow_html=True)
+        # st.subheader("Job Description Rewrite")
         _rewrite(st.session_state["user_title"], st.session_state["user_desc"])
 
         with st.expander("Copy to Clipboard"):

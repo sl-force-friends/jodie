@@ -34,7 +34,7 @@ set_custom_css()
 if st.session_state["read_terms"] is False:
     last_update()
     disclaimer()
-    if st.button("Accept", use_container_width=True, type='primary'):
+    if st.button("Accept", use_container_width=True):
         st.session_state["read_terms"] = True
         st.rerun()
 

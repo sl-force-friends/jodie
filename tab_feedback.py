@@ -49,15 +49,15 @@ def generate_view():
     # button.empty()
     row1 = st.container()
     row1.markdown("""
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 24px;; margin: 2px;">
-        <strong>1. Job Title Check</strong>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 20px;; margin: 2px;">
+        <strong>Title Check</strong>
     </div>
     """,
     unsafe_allow_html=True)
     title_box = row1.empty()
     row1.markdown("""
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 24px;; margin: 2px;">
-        <strong>2. Content Check</strong>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 20px;; margin: 2px;">
+        <strong>Content Check</strong>
     </div>
     """,
     unsafe_allow_html=True)
@@ -66,8 +66,8 @@ def generate_view():
     to_remove_content_box = row1.empty()
     row2 = st.container()
     row2.markdown("""
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 24px;; margin: 2px;">
-        <strong>3. Job Design Suggestions</strong>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 20px;; margin: 2px;">
+        <strong>Job Design Suggestions</strong>
     </div>
     """,
     unsafe_allow_html=True)
@@ -118,7 +118,7 @@ async def check_job_title(box, title, description):
     )
 
     if response.does_title_match:
-        box.success("This is a clear title ✅")
+        box.success("Job Title is clear ✅")
     else:
         response = await client.chat.completions.create(
         model="gpt-35-turbo-16k",
