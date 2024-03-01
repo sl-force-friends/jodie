@@ -68,10 +68,8 @@ def generate_view():
         # st.session_state["rating_ai_rewrite_others"] = st.text_area("Any other comments for the re-written JD?", height=100)
 
 def _rewrite(title, description):
-    re_write_jd = st.container()
-    with re_write_jd:
-        st.write("Generating AI response")
-    # re_write_jd.info("Generating AI version...")
+    re_write_jd = st.empty()
+    re_write_jd.info("Generating AI version...")
     stream = client.chat.completions.create(
         model="gpt-4-32k",
         messages=[{"role": "system", "content": REWRITE_SYSTEM_MESSAGE},
@@ -82,8 +80,6 @@ def _rewrite(title, description):
         stream=True
     )
     streamed_text = ""
-    total_chars = 0
-
     for chunk in stream:
         if chunk.choices and chunk.choices[0].delta.content is not None:
             chunk_content = chunk.choices[0].delta.content
@@ -91,13 +87,15 @@ def _rewrite(title, description):
                 streamed_text += character
                 streamed_text = streamed_text.replace("```", "")
                 # streamed_text = _add_line_breaks(streamed_text)
+                re_write_jd.info(f"""
+                        {streamed_text}
+                        """)
                 time.sleep(0.01)
-
     st.session_state["ai_rewrite"] = streamed_text
-    with re_write_jd:
-        st.write(f"""
-                {streamed_text}
-                """)
+    # with re_write_jd:
+    #     st.write(f"""
+    #             {streamed_text}
+    #             """)
 
 def _add_line_breaks(text, length=150):
     lines = text.split("\n")

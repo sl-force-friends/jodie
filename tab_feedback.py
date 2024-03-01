@@ -48,6 +48,8 @@ def generate_view():
     # # if button.button("Generate Feedback"):
     # button.empty()
     row1 = st.container()
+    # row1.info("Generating AI response...")
+    row1.empty()
     row1.markdown("""
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 20px;; margin: 2px;">
         <strong>Title Check</strong>
