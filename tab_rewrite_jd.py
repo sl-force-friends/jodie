@@ -54,9 +54,9 @@ def generate_view():
         with st.expander("Copy to Clipboard"):
             st.write(f" ``` {_add_line_breaks(st.session_state['ai_rewrite'])}")
 
-        diff_changes = highlight_changes(st.session_state["user_desc"], st.session_state["ai_rewrite"])
+        # diff_changes = highlight_changes(st.session_state["user_desc"], st.session_state["ai_rewrite"])
 
-        st.markdown(diff_changes, unsafe_allow_html=True)
+        # st.markdown(diff_changes, unsafe_allow_html=True)
 
         
 
