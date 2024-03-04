@@ -1,24 +1,28 @@
 """
 app.py
 """
-# For hosting on streamlit community cloud
+# Line 4 to 10 is for hosting on streamlit community cloud
 try:
     __import__('pysqlite3')
     import sys
     sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-except:
+except ModuleNotFoundError:
     pass
 
+
+import urllib3
+
+import asyncio
 import streamlit as st
 
-import tab_add_jd
-import tab_feedback
-import tab_rewrite_jd
-
+from utils.api_calls import (
+    get_mcf_job,
+    async_llm_calls
+    )
 from utils.st_utils import (
-    disclaimer,
+    check_password,
     initialise_session_states,
-    last_update,
+    read_disclaimer,
     set_app_config,
     set_custom_css
     )
@@ -31,39 +35,43 @@ initialise_session_states()
 set_app_config()
 set_custom_css()
 
-if st.session_state["read_terms"] is False:
-    last_update()
-    disclaimer()
-    if st.button("Accept", use_container_width=True):
-        st.session_state["read_terms"] = True
-        st.rerun()
+st.subheader(APP_TITLE)
+st.markdown(FULL_APP_TITLE, unsafe_allow_html=True)
 
-else:
-    st.subheader(APP_TITLE)
+if not check_password():
+    st.stop()
 
-    st.markdown(FULL_APP_TITLE, unsafe_allow_html=True)
+read_disclaimer()
+
+# Step 1: Enter Job Posting
+st.session_state['user_title'] = st.text_input("**Enter Job Title**", 
+                                               value=st.session_state["title_placeholder"])
+
+st.session_state['user_desc'] = st.text_area("**Enter Job Description**", 
+                                             value=st.session_state["desc_placeholder"], 
+                                             height=300)
+
+with st.expander("**📥 Import existing job posting from MCF**"):
+    st.session_state['mcf_url'] = st.text_input(label="**Enter a valid MCF URL**")
+    if st.button("Import from MCF", type='primary'):
+        st.session_state["title_placeholder"] = None
+        st.session_state["desc_placeholder"] = None
+        try:
+            st.session_state["title_placeholder"], st.session_state["desc_placeholder"] = get_mcf_job(st.session_state['mcf_url'])
+        except (urllib3.exceptions.HTTPError, AttributeError, ValueError):
+            st.warning("Error. Please check if you have entered a valid MCF URL", icon="⚠️")
+
+if (st.session_state['user_title'] is not None) and (st.session_state['user_desc'] is not None):
+    generate_feedback = st.button("✨ Generate AI Feedback ✨", use_container_width=True)
+
+# Step 2: Generate Feedback
+if generate_feedback:
+    ai_feedback = st.container()
+
+    ai_feedback.markdown("""
+                         <div style="font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif; color: #cf008a; font-size: 20px;; margin: 2px;">
+                        <strong>Title Check</strong>
+                        </div>""",
+                        unsafe_allow_html=True)
     
-
-    # tab1, tab2, tab3 = st.tabs(TAB_NAMES)
-
-    # with tab1:
-    #     tab_add_jd.generate_view()
-
-    # with tab2:
-    #     tab_feedback.generate_view()
-
-    # with tab3:
-    #     tab_rewrite_jd.generate_view()
-
-    # st.write(TAB_NAMES[0])
-    tab_add_jd.generate_view()
-
-    # st.write(TAB_NAMES[1])
-    # tab_feedback.generate_view()
-
-    tab_rewrite_jd.generate_view()
-
-
-
-
-
+    
