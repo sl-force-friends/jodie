@@ -11,7 +11,7 @@ except ModuleNotFoundError:
 
 
 import urllib3
-
+import time
 import asyncio
 import streamlit as st
 
@@ -69,10 +69,9 @@ st.session_state['user_desc'] = col1.text_area("**Enter Job Description**",
                                              value=st.session_state["desc_placeholder"], 
                                              height=300)
 
-
 with col1.expander("**📥 Import existing job posting from MCF**"):
     st.session_state['mcf_url'] = st.text_input(label="**Enter a valid MCF URL**")
-    if st.button("Import from MCF", type='primary'):
+    if st.button("Import from MCF", type='primary', use_container_width=True):
         st.session_state["title_placeholder"] = None
         st.session_state["desc_placeholder"] = None
         try:
@@ -106,6 +105,5 @@ if st.session_state["btn_generate_feedback_pressed"]:
                                 st.session_state['user_title'],
                                 st.session_state['user_desc']))
     
-
     with col4.expander("Copy to Clipboard"):
-        st.write(f" ``` {_add_line_breaks(st.session_state['llm_outputs'][-1])}")
+        st.markdown(f" ``` {_add_line_breaks(st.session_state['llm_outputs'][-1])}")
