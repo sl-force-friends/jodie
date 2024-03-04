@@ -58,8 +58,8 @@ async def async_llm_calls(title_box,
                           to_remove_content_box,
                           suggestions_box,
                           ai_version_box,
-                          title,
-                          description):
+                          title: str,
+                          description: str) -> None:
     """
     Asynchronous function to run the main logic
     """
@@ -72,10 +72,11 @@ async def async_llm_calls(title_box,
     )
     st.session_state["llm_outputs"] = results
 
-async def check_job_title(title_box, title, description):
+async def check_job_title(title_box, title: str, description: str) -> tuple[int, str]:
     """
     Check if job title is present
     """
+    alternative_titles = None
     result = await _async_api_call(BASE_ENDPOINT + "/title_check",
                                   {"job_title": title, "job_description": description})
     if int(result):
@@ -84,6 +85,8 @@ async def check_job_title(title_box, title, description):
         alternative_titles = await _async_api_call(BASE_ENDPOINT + "/alt_titles",
                                                    {"job_title": title, "job_description": description})
         title_box.warning(f"**Title Check:** You may want to consider these alternative titles: {alternative_titles}", icon="📣")
+    
+    return result, alternative_titles
 
 async def check_positive_content(jd_template_box, title, description):
     """
@@ -105,6 +108,7 @@ async def check_positive_content(jd_template_box, title, description):
             text += f"\n {count+1}. {item_formatted}: ❓"
     
     jd_template_box.info(text, icon="🔎")
+    return text
 
 async def check_negative_content(to_remove_content_box, title, description):
     """
@@ -123,6 +127,7 @@ async def check_negative_content(to_remove_content_box, title, description):
             text += f"\n {count+1}. {item_formatted}"
 
     to_remove_content_box.warning(text, icon="📣")
+    return text
 
 async def generate_recommendations(suggestions_box, title, description):
     """
@@ -139,6 +144,8 @@ async def generate_recommendations(suggestions_box, title, description):
             text += char
             suggestions_box.info(text, icon = "💡")
             time.sleep(0.01)
+    
+    return text
         
 async def generate_ai_version(ai_version_box, title, description):
     """
@@ -155,6 +162,8 @@ async def generate_ai_version(ai_version_box, title, description):
             text += char
             time.sleep(0.01)
             ai_version_box.info(text)
+
+    return text
 
 
 async def _async_api_call(url, data):
