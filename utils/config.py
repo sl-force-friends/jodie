@@ -18,4 +18,4 @@ AZURE_ENDPOINT = st.secrets["JODIE_ENDPOINT"]
 API_VERSION = "2024-02-15-preview"
 
 SESSION_STATE_DEFAULT_NONE = ["mcf_url", "title_placeholder", "desc_placeholder", "user_title", "user_desc"]
-SESSION_STATE_DEFAULT_FALSE = ["read_terms", "btn_generate_feedback_pressed"]
+SESSION_STATE_DEFAULT_FALSE = ["read_terms", "mcf_expander", "btn_generate_feedback_pressed"]
