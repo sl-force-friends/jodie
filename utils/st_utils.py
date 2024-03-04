@@ -22,7 +22,7 @@ def set_app_config() -> None:
     st.set_page_config(
         page_title="JODIE",
         page_icon="🔎",
-        layout="centered"
+        layout="wide"
     )
 
 def set_custom_css() -> None:

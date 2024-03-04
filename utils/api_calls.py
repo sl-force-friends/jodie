@@ -1,17 +1,27 @@
 import json
 import re
+import time
 import urllib3
 
+import aiohttp
 import asyncio
 import streamlit as st
 
-JODIE_API_KEY = st.secrets["JODIE_BACKEND_API_KEY"]
+JODIE_BACKEND_API_KEY = st.secrets["JODIE_BACKEND_API_KEY"]
+
+JODIE_API_HEADERS = {
+    'Content-Type': 'application/json',
+    'x-api-key': JODIE_BACKEND_API_KEY
+}
+
+BASE_ENDPOINT = "https://jodie-api.fly.dev"
+
 
 def get_mcf_job(mcf_url: str) -> list[str]:
     """
     Pulls job from MCF
     """
-    http = urllib3.PoolManager()
+    http = urllib3.PoolManager(cert_reqs='CERT_NONE')
     regex_matches = re.search('([a-f0-9]{32})', mcf_url)
     if not regex_matches:
         raise ValueError("Invalid MCF URL")
@@ -44,8 +54,7 @@ def _clean_html(text: str) -> str:
     return cleantext
 
 async def async_llm_calls(title_box,
-                          present_content_box,
-                          missing_content_box,
+                          jd_template_box,
                           to_remove_content_box,
                           suggestions_box,
                           ai_version_box,
@@ -56,50 +65,112 @@ async def async_llm_calls(title_box,
     """
     results = await asyncio.gather(
         check_job_title(title_box, title, description),
-        check_positive_content(present_content_box, missing_content_box, title, description),
+        check_positive_content(jd_template_box, title, description),
         check_negative_content(to_remove_content_box, title, description),
         generate_recommendations(suggestions_box, title, description),
         generate_ai_version(ai_version_box, title, description)
     )
-    st.session_state["ai_feedback"] = results
+    st.session_state["llm_outputs"] = results
 
 async def check_job_title(title_box, title, description):
     """
     Check if job title is present
     """
-    if not title:
-        title_box.warning("Please enter a job title", icon="⚠️")
-        return None
-    return title
+    result = await _async_api_call(BASE_ENDPOINT + "/title_check",
+                                  {"job_title": title, "job_description": description})
+    if int(result):
+        title_box.success("**Title Check:** This is a clear job title.", icon="✅")
+    else:
+        alternative_titles = await _async_api_call(BASE_ENDPOINT + "/alt_titles",
+                                                   {"job_title": title, "job_description": description})
+        title_box.warning(f"**Title Check:** You may want to consider these alternative titles: {alternative_titles}", icon="📣")
 
-async def check_positive_content(present_content_box, missing_content_box, title, description):
+async def check_positive_content(jd_template_box, title, description):
     """
     Check if job description is present
     """
-    if not description:
-        missing_content_box.warning("Please enter a job description", icon="⚠️")
-        return None
-    return description
+    result = await _async_api_call(BASE_ENDPOINT + "/positive_content_check",
+                                  {"job_title": title, "job_description": description})
+    
+    result = json.loads(result)
+
+    text = "**Content Check:** \n \n"
+
+    for count, item in enumerate(result.keys()):
+        if result[item]:
+            item_formatted = item.replace("_", " ").capitalize()
+            text += f"\n {count+1}. {item_formatted}: ✅"
+        else:
+            item_formatted = item.replace("_", " ").capitalize()
+            text += f"\n {count+1}. {item_formatted}: ❓"
+    
+    jd_template_box.info(text, icon="🔎")
 
 async def check_negative_content(to_remove_content_box, title, description):
     """
     Check if job description is present
     """
-    if not description:
-        to_remove_content_box.warning("Please enter a job description", icon="⚠️")
-        return None
-    return description
+    result = await _async_api_call(BASE_ENDPOINT + "/negative_content_check",
+                                  {"job_title": title, "job_description": description})
+    
+    result = json.loads(result)
+
+    text = "You may want to consider removing the following: "
+
+    for count, item in enumerate(result.keys()):
+        if result[item]:
+            item_formatted = item.replace("_", " ").capitalize()
+            text += f"\n {count+1}. {item_formatted}"
+
+    to_remove_content_box.warning(text, icon="📣")
 
 async def generate_recommendations(suggestions_box, title, description):
     """
     Generate recommendations
     """
-    suggestions_box.info("Generating recommendations...")
-    return None
+    stream = _async_api_call_streaming(BASE_ENDPOINT + "/job_design_suggestions",
+                                  {"job_title": title, "job_description": description})
+    
+    text = "**Job Design Suggestions:** \n \n"
 
+    async for chunk in stream:
+        chunk = chunk.decode('utf-8')
+        for char in chunk:
+            text += char
+            suggestions_box.info(text, icon = "💡")
+            time.sleep(0.01)
+        
 async def generate_ai_version(ai_version_box, title, description):
     """
     Generate AI version
     """
-    ai_version_box.info("Generating AI version...")
-    return None
+    stream = _async_api_call_streaming(BASE_ENDPOINT + "/rewrite_jd",
+                                  {"job_title": title, "job_description": description})
+    
+    text = ""
+
+    async for chunk in stream:
+        chunk = chunk.decode('utf-8')
+        for char in chunk:
+            text += char
+            time.sleep(0.01)
+            ai_version_box.info(text)
+
+
+async def _async_api_call(url, data):
+    """
+    Asynchronous API call
+    """
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session: 
+        async with session.post(url, data=json.dumps(data), headers=JODIE_API_HEADERS) as response:  # Makes a POST request
+            response_data = await response.text()  
+            return response_data
+
+async def _async_api_call_streaming(url, data):
+    """
+    Asynchronous API call with streaming response.
+    """
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) as session:  # Creates a session
+        async with session.post(url, data=json.dumps(data), headers=JODIE_API_HEADERS) as response:
+            async for chunk in response.content:
+                yield chunk
