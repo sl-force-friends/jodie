@@ -61,7 +61,7 @@ def initialise_session_states() -> None:
         if session_state not in st.session_state:
             st.session_state[session_state] = False
 
-def disclaimer():
+def disclaimer() -> None:
     """
     Disclaimer UI
     """
@@ -71,7 +71,7 @@ def disclaimer():
     st.info("Your prompts will not be stored by commercial vendors, but may be logged to improve our services. This tool is only for job descriptions.", icon="🚨")
     st.info("By using this service, you acknowledge you recognise the possibility of AI generating inaccurate responses, and you take full responsibility over how you use the generated output.", icon="🤝")
 
-def last_update():
+def last_update() -> None:
     """
     Last update UI
     """
