@@ -3,6 +3,9 @@ import re
 import urllib3
 
 import asyncio
+import streamlit as st
+
+JODIE_API_KEY = st.secrets["JODIE_BACKEND_API_KEY"]
 
 def get_mcf_job(mcf_url: str) -> list[str]:
     """
@@ -40,17 +43,63 @@ def _clean_html(text: str) -> str:
     cleantext = re.sub(r'http\S+', '', cleantext)
     return cleantext
 
-async def main(box1, box2, box3, box4, box5, title, description):
+async def async_llm_calls(title_box,
+                          present_content_box,
+                          missing_content_box,
+                          to_remove_content_box,
+                          suggestions_box,
+                          ai_version_box,
+                          title,
+                          description):
     """
     Asynchronous function to run the main logic
     """
     results = await asyncio.gather(
-        check_job_title(box1, title, description),
-        check_positive_content(box2, box3, title, description),
-        check_negative_content(box4, title, description),
-        generate_recommendations(box5, title, description),
-        generate_ai_version(box6, title, description)
+        check_job_title(title_box, title, description),
+        check_positive_content(present_content_box, missing_content_box, title, description),
+        check_negative_content(to_remove_content_box, title, description),
+        generate_recommendations(suggestions_box, title, description),
+        generate_ai_version(ai_version_box, title, description)
     )
-
     st.session_state["ai_feedback"] = results
 
+async def check_job_title(title_box, title, description):
+    """
+    Check if job title is present
+    """
+    if not title:
+        title_box.warning("Please enter a job title", icon="⚠️")
+        return None
+    return title
+
+async def check_positive_content(present_content_box, missing_content_box, title, description):
+    """
+    Check if job description is present
+    """
+    if not description:
+        missing_content_box.warning("Please enter a job description", icon="⚠️")
+        return None
+    return description
+
+async def check_negative_content(to_remove_content_box, title, description):
+    """
+    Check if job description is present
+    """
+    if not description:
+        to_remove_content_box.warning("Please enter a job description", icon="⚠️")
+        return None
+    return description
+
+async def generate_recommendations(suggestions_box, title, description):
+    """
+    Generate recommendations
+    """
+    suggestions_box.info("Generating recommendations...")
+    return None
+
+async def generate_ai_version(ai_version_box, title, description):
+    """
+    Generate AI version
+    """
+    ai_version_box.info("Generating AI version...")
+    return None
