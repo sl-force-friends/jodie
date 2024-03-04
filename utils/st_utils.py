@@ -5,13 +5,14 @@ Utils related to streamlit app
 import streamlit as st
 
 from utils.config import (
-    SESSION_STATE_DEFAULT_NONE,
-    SESSION_STATE_DEFAULT_FALSE
+    SESSION_STATE_DEFAULT_FALSE,
+    SESSION_STATE_DEFAULT_NONE
     )
 
 from utils.config import (
     APP_TITLE,
-    FULL_APP_TITLE
+    FULL_APP_TITLE,
+    LAST_UPDATE_DATE
     )
 
 def set_app_config() -> None:
@@ -61,6 +62,9 @@ def initialise_session_states() -> None:
             st.session_state[session_state] = False
 
 def disclaimer():
+    """
+    Disclaimer UI
+    """
     st.title(APP_TITLE)
     st.markdown(FULL_APP_TITLE, unsafe_allow_html=True)
     st.info("This application is by powered by a Large Language Model (LLMs) and you can use it to generate job posting suggestions. \n \n Treat this as a helpful AI assistant that can provide initial ideas for you to refine. Never trust the responses at face value. If in doubt, don't use the given response.", icon="👋")
@@ -68,4 +72,7 @@ def disclaimer():
     st.info("By using this service, you acknowledge you recognise the possibility of AI generating inaccurate responses, and you take full responsibility over how you use the generated output.", icon="🤝")
 
 def last_update():
-    st.write("This application is in `alpha-stage` testing (v0.2.0, last updated 16/02/2024).")
+    """
+    Last update UI
+    """
+    st.write(f"This application is in `alpha-stage` testing (v0.2.0, last updated {LAST_UPDATE_DATE}).")

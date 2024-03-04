@@ -3,6 +3,8 @@ config.py
 """
 import streamlit as st
 
+LAST_UPDATE_DATE = "16-02-2024"
+
 APP_TITLE = "📝 JODIE"
 FULL_APP_TITLE = """
     **<span style='color: #cf008a; font-size: 24px;'>Jo</span>b 
