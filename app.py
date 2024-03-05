@@ -9,10 +9,9 @@ try:
 except ModuleNotFoundError:
     pass
 
+import asyncio
 
 import urllib3
-import time
-import asyncio
 import streamlit as st
 
 from utils.api_calls import (
