@@ -10,8 +10,6 @@ from utils.config import (
     )
 
 from utils.config import (
-    APP_TITLE,
-    FULL_APP_TITLE,
     LAST_UPDATE_DATE
     )
 
@@ -22,7 +20,7 @@ def set_app_config() -> None:
     st.set_page_config(
         page_title="JODIE",
         page_icon="🔎",
-        layout="wide"
+        layout="centered",
     )
 
 def set_custom_css() -> None:
@@ -61,6 +59,7 @@ def initialise_session_states() -> None:
         if session_state not in st.session_state:
             st.session_state[session_state] = False
 
+
 def read_disclaimer():
     """
     Disclaimer UI
@@ -95,3 +94,18 @@ def check_password():
     if "password_correct" in st.session_state:
         st.error("😕 Password incorrect")
     return False
+
+def add_line_breaks(text, length=70):
+    lines = text.split("\n")
+    new_lines = []
+    for line in lines:
+        words = line.split()
+        current_line = ""
+        for word in words:
+            if len(current_line) + len(word) <= length:
+                current_line += word + " "
+            else:
+                new_lines.append(current_line.strip())
+                current_line = word + " "
+        new_lines.append(current_line.strip())
+    return "\n".join(new_lines)

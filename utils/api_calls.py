@@ -80,11 +80,11 @@ async def check_job_title(title_box, title: str, description: str) -> tuple[int,
     result = await _async_api_call(BASE_ENDPOINT + "/title_check",
                                   {"job_title": title, "job_description": description})
     if int(result):
-        title_box.success("**Title Check:** This is a clear job title.", icon="✅")
+        title_box.success("This is a clear job title.", icon="✅")
     else:
         alternative_titles = await _async_api_call(BASE_ENDPOINT + "/alt_titles",
                                                    {"job_title": title, "job_description": description})
-        title_box.warning(f"**Title Check:** You may want to consider these alternative titles: {alternative_titles}", icon="📣")
+        title_box.warning(f"You may want to consider these alternative titles: {alternative_titles}", icon="📣")
     
     return result, alternative_titles
 
@@ -97,18 +97,25 @@ async def check_positive_content(jd_template_box, title, description):
     
     result = json.loads(result)
 
-    text = "**Content Check:** \n \n"
+    present_text = "Good job - your JD contains the following: \n \n"
+    negative_text = "You may want to add or make clearer the following: \n \n"
 
-    for count, item in enumerate(result.keys()):
+    for _, item in enumerate(result.keys()):
         if result[item]:
             item_formatted = item.replace("_", " ").capitalize()
-            text += f"\n {count+1}. {item_formatted}: ✅"
+            present_text += f"\n - {item_formatted}"
         else:
             item_formatted = item.replace("_", " ").capitalize()
-            text += f"\n {count+1}. {item_formatted}: ❓"
+            present_text += f"\n - {item_formatted}"
     
-    jd_template_box.info(text, icon="🔎")
-    return text
+    if negative_text == "You may want to add or make clearer the following: \n \n":
+        jd_template_box.success(present_text)
+    else:
+        colA, colB = jd_template_box.columns(2)
+        colA.success(present_text)
+        colB.warning(negative_text)
+
+    return [result, present_text, negative_text]
 
 async def check_negative_content(to_remove_content_box, title, description):
     """
@@ -125,8 +132,10 @@ async def check_negative_content(to_remove_content_box, title, description):
         if result[item]:
             item_formatted = item.replace("_", " ").capitalize()
             text += f"\n {count+1}. {item_formatted}"
-
-    to_remove_content_box.warning(text, icon="📣")
+    if text == "You may want to consider removing the following: ":
+        to_remove_content_box.empty()
+    else:
+        to_remove_content_box.warning(text, icon="📣")
     return text
 
 async def generate_recommendations(suggestions_box, title, description):
@@ -134,15 +143,15 @@ async def generate_recommendations(suggestions_box, title, description):
     Generate recommendations
     """
     stream = _async_api_call_streaming(BASE_ENDPOINT + "/job_design_suggestions",
-                                  {"job_title": title, "job_description": description})
+                                  {"job_title": title, "job_description": description,  "groq": False})
     
-    text = "**Job Design Suggestions:** \n \n"
+    text = "**💡 Job Design Suggestions:** \n \n"
 
     async for chunk in stream:
         chunk = chunk.decode('utf-8')
         for char in chunk:
             text += char
-            suggestions_box.info(text, icon = "💡")
+            suggestions_box.info(text)
             time.sleep(0.01)
     
     return text
@@ -152,7 +161,7 @@ async def generate_ai_version(ai_version_box, title, description):
     Generate AI version
     """
     stream = _async_api_call_streaming(BASE_ENDPOINT + "/rewrite_jd",
-                                  {"job_title": title, "job_description": description})
+                                  {"job_title": title, "job_description": description, "groq": False})
     
     text = ""
 

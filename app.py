@@ -20,6 +20,7 @@ from utils.api_calls import (
     async_llm_calls
     )
 from utils.st_utils import (
+    add_line_breaks,
     check_password,
     initialise_session_states,
     read_disclaimer,
@@ -35,21 +36,6 @@ initialise_session_states()
 set_app_config()
 set_custom_css()
 
-def _add_line_breaks(text, length=150):
-    lines = text.split("\n")
-    new_lines = []
-    for line in lines:
-        words = line.split()
-        current_line = ""
-        for word in words:
-            if len(current_line) + len(word) <= length:
-                current_line += word + " "
-            else:
-                new_lines.append(current_line.strip())
-                current_line = word + " "
-        new_lines.append(current_line.strip())
-    return "\n".join(new_lines)
-
 st.subheader(APP_TITLE)
 st.markdown(FULL_APP_TITLE, unsafe_allow_html=True)
 
@@ -58,19 +44,16 @@ if not check_password():
 
 read_disclaimer()
 
-
-col1, col2 = st.columns(2)
-
 # Step 1: Enter Job Posting
-st.session_state['user_title'] = col1.text_input("**Enter Job Title**", 
-                                               value=st.session_state["title_placeholder"])
+with st.expander("**Step 1: Enter your JD**", expanded=True):
+    st.session_state['user_title'] = st.text_input("**Enter Job Title**", 
+                                                value=st.session_state["title_placeholder"])
 
-st.session_state['user_desc'] = col1.text_area("**Enter Job Description**", 
-                                             value=st.session_state["desc_placeholder"], 
-                                             height=300)
+    st.session_state['user_desc'] = st.text_area("**Enter Job Description**", 
+                                                value=st.session_state["desc_placeholder"], 
+                                                height=300)
 
-with col1.expander("**📥 Import existing job posting from MCF**"):
-    st.session_state['mcf_url'] = st.text_input(label="**Enter a valid MCF URL**")
+    st.session_state['mcf_url'] = st.text_input(label="**(Optional) Import from MCF:** Enter a valid MCF URL")
     if st.button("Import from MCF", type='primary', use_container_width=True):
         st.session_state["title_placeholder"] = None
         st.session_state["desc_placeholder"] = None
@@ -81,21 +64,27 @@ with col1.expander("**📥 Import existing job posting from MCF**"):
             st.warning("Error. Please check if you have entered a valid MCF URL", icon="⚠️")
 
 if (st.session_state['user_title'] is not None) and (st.session_state['user_desc'] is not None):
-    st.session_state["btn_generate_feedback_pressed"] = col1.button("✨ Generate AI Feedback ✨", use_container_width=True)
+    st.session_state["btn_generate_feedback_pressed"] = st.button("✨ Step 2: Generate AI Feedback ✨", use_container_width=True)
 
 # Step 2: Generate Feedback
 if st.session_state["btn_generate_feedback_pressed"]:
-    title_box = col2.empty()
-    title_box = col2.info("**Title Check:** Analysing ...", icon="⏳")
-    jd_template_box = col2.empty()
-    jd_template_box = col2.info("**Content Check:** Analysing ...", icon="⏳")
-    to_remove_content_box = col2.empty()
     st.divider()
-    col3, col4 = st.columns(2)
-    suggestions_box = col3.empty()
-    suggestions_box = col3.info("**Job Design Suggestions:** Analysing ...", icon="⏳")
-    ai_version_box = col4.empty()
-    ai_version_box = col4.info("**Re-writing the JD with AI** ...", icon="⏳")
+    st.subheader("AI Feedback")
+    with st.expander("**Is my job title clear?**", expanded=True):
+        title_box = st.empty()
+        title_box = st.info("Analysing ...", icon="⏳")
+    with st.expander("**Is there sufficient info in my JD?**", expanded=True):
+        jd_template_box = st.empty()
+        jd_template_box = st.info("Analysing ...", icon="⏳")
+        to_remove_content_box = st.empty()
+    with st.expander("**How can I re-design my job?**", expanded=True):
+        suggestions_box = st.empty()
+        suggestions_box = st.info("Analysing ...", icon="⏳")
+    
+    st.divider()
+    with st.expander("**AI-Written JD**", expanded=True):
+        ai_version_box = st.empty()
+        ai_version_box = st.info("**Re-writing the JD with AI** ...", icon="⏳")
 
     asyncio.run(async_llm_calls(title_box,
                                 jd_template_box,
@@ -105,5 +94,5 @@ if st.session_state["btn_generate_feedback_pressed"]:
                                 st.session_state['user_title'],
                                 st.session_state['user_desc']))
     
-    with col4.expander("Copy to Clipboard"):
-        st.markdown(f" ``` {_add_line_breaks(st.session_state['llm_outputs'][-1])}")
+    with st.expander("Copy to Clipboard"):
+        st.markdown(f" ``` {add_line_breaks(st.session_state['llm_outputs'][-1])}")
