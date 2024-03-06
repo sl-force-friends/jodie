@@ -34,10 +34,11 @@ def get_mcf_job(mcf_url: str) -> list[str]:
     try:
         mcf_title = mcf_data['title']
         mcf_desc = mcf_data['description']
+        ssoc = mcf_data['ssocCode']
     except AttributeError as e:
         raise AttributeError("Cannot find job title or description from MCF. Please try again.") from e
     mcf_desc = _clean_html(mcf_desc)
-    return [mcf_title, mcf_desc]
+    return [mcf_title, mcf_desc, ssoc]
 
 def _clean_html(text: str) -> str:
     # Remove HTML tags
@@ -56,10 +57,12 @@ def _clean_html(text: str) -> str:
 async def async_llm_calls(title_box,
                           jd_template_box,
                           to_remove_content_box,
+                          skills_box,
                           suggestions_box,
                           ai_version_box,
                           title: str,
-                          description: str) -> None:
+                          description: str, 
+                          ssoc: int) -> None:
     """
     Asynchronous function to run the main logic
     """
@@ -67,6 +70,7 @@ async def async_llm_calls(title_box,
         check_job_title(title_box, title, description),
         check_positive_content(jd_template_box, title, description),
         check_negative_content(to_remove_content_box, title, description),
+        get_skills(skills_box, ssoc),
         generate_recommendations(suggestions_box, title, description),
         generate_ai_version(ai_version_box, title, description)
     )
@@ -137,6 +141,20 @@ async def check_negative_content(to_remove_content_box, title, description):
     else:
         to_remove_content_box.warning(text, icon="📣")
     return text
+
+async def get_skills(skills_box, ssoc: int):
+    """
+    Get skills
+    """
+    result = await _async_api_call("https://njsi.herokuapp.com/api/v1/whoami",
+                                   {"input_dict": {"current_SSOC": ssoc}})
+    
+    result = json.loads(result)
+    differentiator_skills = result["results"][0]['differentiator_skills']
+
+    skills_box.info(differentiator_skills)
+
+    return differentiator_skills
 
 async def generate_recommendations(suggestions_box, title, description):
     """
