@@ -5,12 +5,14 @@ import streamlit as st
 
 LAST_UPDATE_DATE = "04-03-2024"
 
-APP_TITLE = "📝 JODIE"
-FULL_APP_TITLE = """
-    **<span style='color: #cf008a; font-size: 24px;'>JO</span>b 
-    <span style='color: #cf008a; font-size: 24px;'>D</span>escription 
-    <span style='color: #cf008a; font-size: 24px;'>I</span>ntelligent 
-    <span style='color: #cf008a; font-size: 24px;'>E</span>nhancer**
+APP_TITLE = """
+    <div style='text-align: center; padding-bottom: 20px;'>
+        <b><span style='color: #cf008a; font-size: 24px;'>✨ JODIE</span> <br>
+        <span style='color: #cf008a'>JO</span>b 
+        <span style='color: #cf008a'>D</span>escription 
+        <span style='color: #cf008a'>I</span>ntelligent 
+        <span style='color: #cf008a'>E</span>nhancer</b>
+    </div>
     """
 
 API_KEY = st.secrets["JODIE_API_KEY"]

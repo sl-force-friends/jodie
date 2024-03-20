@@ -2,19 +2,18 @@ import json
 import re
 import time
 import urllib3
+from typing import Any
 
 import aiohttp
 import asyncio
 import streamlit as st
 
+BASE_ENDPOINT = st.secrets["JODIE_BACKEND_ENDPOINT"]
 JODIE_BACKEND_API_KEY = st.secrets["JODIE_BACKEND_API_KEY"]
-
 JODIE_API_HEADERS = {
     'Content-Type': 'application/json',
     'x-api-key': JODIE_BACKEND_API_KEY
 }
-
-BASE_ENDPOINT = "https://jodie-api.fly.dev"
 
 
 def get_mcf_job(mcf_url: str) -> list[str]:
@@ -76,7 +75,7 @@ async def async_llm_calls(title_box,
     )
     st.session_state["llm_outputs"] = results
 
-async def check_job_title(title_box, title: str, description: str) -> tuple[int, str]:
+async def check_job_title(title_box, title: str, description: str) -> tuple[Any, Any | None]:
     """
     Check if job title is present
     """
@@ -88,7 +87,10 @@ async def check_job_title(title_box, title: str, description: str) -> tuple[int,
     else:
         alternative_titles = await _async_api_call(BASE_ENDPOINT + "/alt_titles",
                                                    {"job_title": title, "job_description": description})
-        title_box.warning(f"You may want to consider these alternative titles: {alternative_titles}", icon="📣")
+        alternative_titles = json.loads(alternative_titles)
+        alternative_titles_numbered = [f"\n\n {num+1}. {alt_title}" for num, alt_title in enumerate(alternative_titles)]
+        alternative_titles_numbered_text = ''.join(alternative_titles_numbered)
+        title_box.warning(f"You may want to consider these alternative titles: \n {alternative_titles_numbered_text}", icon="📣")
     
     return result, alternative_titles
 
@@ -151,8 +153,12 @@ async def get_skills(skills_box, ssoc: int):
     
     result = json.loads(result)
     differentiator_skills = result["results"][0]['differentiator_skills']
+    differentiator_skills_top_3 = differentiator_skills[:3]
 
-    skills_box.info(differentiator_skills)
+    numbered_list_of_skills = [str(num+1) + '. ' + skill.capitalize() + ' \n' for num, skill in enumerate(differentiator_skills_top_3)]
+    numbered_skills = ''.join(numbered_list_of_skills)
+
+    skills_box.info(numbered_skills)
 
     return differentiator_skills
 
@@ -161,7 +167,7 @@ async def generate_recommendations(suggestions_box, title, description):
     Generate recommendations
     """
     stream = _async_api_call_streaming(BASE_ENDPOINT + "/job_design_suggestions",
-                                  {"job_title": title, "job_description": description,  "groq": False})
+                                       {"job_title": title, "job_description": description,  "groq": False})
     
     text = "**💡 Job Design Suggestions:** \n \n"
 
@@ -179,7 +185,7 @@ async def generate_ai_version(ai_version_box, title, description):
     Generate AI version
     """
     stream = _async_api_call_streaming(BASE_ENDPOINT + "/rewrite_jd",
-                                  {"job_title": title, "job_description": description, "groq": False})
+                                       {"job_title": title, "job_description": description, "groq": False})
     
     text = ""
 
