@@ -1,17 +1,16 @@
 """
 Utils related to streamlit app
 """
-
+import hmac
 import streamlit as st
 
 from utils.config import (
-    SESSION_STATE_DEFAULT_NONE,
-    SESSION_STATE_DEFAULT_FALSE
+    SESSION_STATE_DEFAULT_FALSE,
+    SESSION_STATE_DEFAULT_NONE
     )
 
 from utils.config import (
-    APP_TITLE,
-    FULL_APP_TITLE
+    LAST_UPDATE_DATE
     )
 
 def set_app_config() -> None:
@@ -19,7 +18,7 @@ def set_app_config() -> None:
     Agg configurations
     """
     st.set_page_config(
-        page_title="jodie",
+        page_title="JODIE",
         page_icon="🔎",
         layout="centered",
     )
@@ -60,12 +59,53 @@ def initialise_session_states() -> None:
         if session_state not in st.session_state:
             st.session_state[session_state] = False
 
-def disclaimer():
-    st.title(APP_TITLE)
-    st.markdown(FULL_APP_TITLE, unsafe_allow_html=True)
-    st.info("This application is by powered by a Large Language Model (LLMs) and you can use it to generate job posting suggestions. \n \n Treat this as a helpful AI assistant that can provide initial ideas for you to refine. Never trust the responses at face value. If in doubt, don't use the given response.", icon="👋")
-    st.info("Your prompts will not be stored by commercial vendors, but may be logged to improve our services. This tool is only for job descriptions.", icon="🚨")
-    st.info("By using this service, you acknowledge you recognise the possibility of AI generating inaccurate responses, and you take full responsibility over how you use the generated output.", icon="🤝")
 
-def last_update():
-    st.write("This application is in `alpha-stage` testing (v0.2.0, last updated 16/02/2024).")
+def read_disclaimer():
+    """
+    Disclaimer UI
+    """
+    if not st.session_state["read_terms"]:
+        st.write(f"JODIE is still in `alpha-stage` testing (v0.3.0, last updated {LAST_UPDATE_DATE}).")
+        st.info("This tool uses Large Language Model (LLMs) to generate suggestions for your job description.", icon="👋")
+        st.info("Your prompts are not be stored by commercial vendors, but may be logged to improve our services. ", icon="🚨")
+        st.info("By using this service, you acknowledge you recognise the possibility of AI generating inaccurate responses, and you take full responsibility over how you use the generated output.", icon="🤝")
+        if st.button("Accept ✅", use_container_width=True):
+            st.session_state["read_terms"] = True
+            st.rerun()
+        else:
+            st.stop()
+
+def check_password():
+    """Returns `True` if the user had the correct password."""
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store the password.
+        else:
+            st.session_state["password_correct"] = False
+    # Return True if the password is validated.
+    if st.session_state.get("password_correct", False):
+        return True
+    # Show input for password.
+    st.text_input(
+        "Enter the password 🔒", type="password", on_change=password_entered, key="password"
+    )
+    if "password_correct" in st.session_state:
+        st.error("😕 Password incorrect")
+    return False
+
+def add_line_breaks(text, length=70):
+    lines = text.split("\n")
+    new_lines = []
+    for line in lines:
+        words = line.split()
+        current_line = ""
+        for word in words:
+            if len(current_line) + len(word) <= length:
+                current_line += word + " "
+            else:
+                new_lines.append(current_line.strip())
+                current_line = word + " "
+        new_lines.append(current_line.strip())
+    return "\n".join(new_lines)
