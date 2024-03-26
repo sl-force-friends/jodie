@@ -89,10 +89,10 @@ if st.session_state["btn_generate_feedback_pressed"]:
                 </div>
                 <br>""", unsafe_allow_html=True)
     
-    job_title_check_expander = st.expander("**Is my job title clear?**", expanded=True)
-    jd_template_check_expander = st.expander("**Is there sufficient info in my JD?**", expanded=True)
-    skills_check_expander = st.expander("**What are additional skills should I emphasize?**", expanded=True)
-    job_design_suggestion_expander = st.expander("**How can I re-design my job?**", expanded=True)
+    job_title_check_expander = st.status("**Is my job title clear?**", expanded=True)
+    jd_template_check_expander = st.status("**Is there sufficient info in my JD?**", expanded=True)
+    skills_check_expander = st.status("**What additional skills should I emphasize?**", expanded=True)
+    job_design_suggestion_expander = st.status("**How can I re-design my job?**", expanded=True)
 
     with job_title_check_expander:
         title_box = st.empty()
