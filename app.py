@@ -48,6 +48,8 @@ if not check_password():
 read_disclaimer()
 
 # Step 1: Enter Job Posting
+# Popover
+# Text box
 st.session_state['user_title'] = st.text_input("**Job Title**", 
                                             value=st.session_state["title_placeholder"])
 
@@ -55,9 +57,9 @@ st.session_state['user_desc'] = st.text_area("**Job Description**",
                                             value=st.session_state["desc_placeholder"], 
                                             height=300)
 
-generated_feedback_button = st.empty()
+col1, _ , col2 = st.columns([0.9,0.1,2.4])
 
-with st.expander("**(Optional) Import from MCF**", expanded=False):
+with col1.popover("Import from MCF"):
 
     st.session_state['mcf_url'] = st.text_input(label="**Import from MCF:** Enter a valid MCF URL")
 
@@ -70,9 +72,10 @@ with st.expander("**(Optional) Import from MCF**", expanded=False):
         except (urllib3.exceptions.HTTPError, AttributeError, ValueError):
             st.warning("Error. Please check if you have entered a valid MCF URL", icon="⚠️")
 
-if (st.session_state['user_title'] is not None) and (st.session_state['user_desc'] is not None):
-    st.session_state["btn_generate_feedback_pressed"] = generated_feedback_button.button("✨ Ask JODIE ✨", 
-                                                                                         use_container_width=True)
+generated_feedback_button = col2.empty()
+
+st.session_state["btn_generate_feedback_pressed"] = generated_feedback_button.button("**✨ Ask JODIE ✨**",
+                                                                                     use_container_width=True)
 
 # Step 2: Generate Feedback
 if st.session_state["btn_generate_feedback_pressed"]:
