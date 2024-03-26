@@ -61,9 +61,9 @@ col1, _ , col2 = st.columns([0.9,0.1,2.4])
 
 with col1.popover("Import from MCF"):
 
-    st.session_state['mcf_url'] = st.text_input(label="**Import from MCF:** Enter a valid MCF URL")
+    st.session_state['mcf_url'] = st.text_input(label="Enter a valid MCF URL")
 
-    if st.button("Import from MCF", type='primary', use_container_width=True):
+    if st.button("Import", type='primary', use_container_width=True):
         st.session_state["title_placeholder"] = None
         st.session_state["desc_placeholder"] = None
         try:
