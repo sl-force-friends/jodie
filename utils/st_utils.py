@@ -1,6 +1,8 @@
 """
 Utils related to streamlit app
 """
+import uuid
+
 import hmac
 import streamlit as st
 
@@ -58,6 +60,8 @@ def initialise_session_states() -> None:
     for session_state in SESSION_STATE_DEFAULT_FALSE:
         if session_state not in st.session_state:
             st.session_state[session_state] = False
+    if "session_id" not in st.session_state:
+        st.session_state["session_id"] = uuid.uuid4().hex
 
 
 def read_disclaimer():
