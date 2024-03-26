@@ -18,6 +18,13 @@ from utils.api_calls import (
     get_mcf_job,
     async_llm_calls
     )
+from utils.feedback import (
+    add_title_feedback,
+    add_jd_template_feedback,
+    add_skills_feedback,
+    add_job_design_reco_feedback,
+    add_ai_written_feedback
+    )
 from utils.st_utils import (
     add_line_breaks,
     check_password,
@@ -134,29 +141,29 @@ if st.session_state["btn_generate_feedback_pressed"]:
     with job_title_check_expander:
         st.markdown("<span style='font-size:14px'><i><b>Do you agree with this recommendation?</i></b></span>", unsafe_allow_html=True)
         title_yes, title_no, _ = st.columns([1, 1, 10])
-        title_yes.button("👍", key="feedback_title_yes")
-        title_no.button("👎", key="feedback_title_no")
+        title_yes.button("👍", key="feedback_title_yes", on_click=add_title_feedback, args=(1, None))
+        title_no.button("👎", key="feedback_title_no", on_click=add_title_feedback, args=(0, None))
 
     with jd_template_check_expander:
         st.markdown("<span style='font-size:14px'><i><b>Do you agree with this recommendation?</i></b></span>", unsafe_allow_html=True)
         jd_template_yes, jd_template_no, _ = st.columns([1, 1, 10])
-        jd_template_yes.button("👍", key="feedback_jd_template_yes")
-        jd_template_no.button("👎", key="feedback_jd_template_no")
+        jd_template_yes.button("👍", key="feedback_jd_template_yes", on_click=add_jd_template_feedback, args=(1, None))
+        jd_template_no.button("👎", key="feedback_jd_template_no", on_click=add_jd_template_feedback, args=(0, None))
     
     with skills_check_expander:
         st.markdown("<span style='font-size:14px'><i><b>Do you agree with this recommendation?</i></b></span>", unsafe_allow_html=True)
         skills_yes, skills_no, _ = st.columns([1, 1, 10])
-        skills_yes.button("👍", key="feedback_skills_yes")
-        skills_no.button("👎", key="feedback_skills_no")
+        skills_yes.button("👍", key="feedback_skills_yes", on_click=add_skills_feedback, args=(1, None))
+        skills_no.button("👎", key="feedback_skills_no", on_click=add_skills_feedback, args=(0, None))
     
     with job_design_suggestion_expander:
         st.markdown("<span style='font-size:14px'><i><b>Do you agree with this recommendation?</i></b></span>", unsafe_allow_html=True)
         design_yes, design_no, _ = st.columns([1, 1, 10])
-        design_yes.button("👍", key="feedback_design_yes")
-        design_no.button("👎", key="feedback_design_no")
+        design_yes.button("👍", key="feedback_design_yes", on_click=add_job_design_reco_feedback, args=(1, None))
+        design_no.button("👎", key="feedback_design_no", on_click=add_job_design_reco_feedback, args=(0, None))
     
     with ai_written_jd_expander:
         st.markdown("<span style='font-size:14px'><i><b>Do you agree with this re-write?</i></b></span>", unsafe_allow_html=True)
         ai_written_yes, ai_written_no, _ = st.columns([1, 1, 10])
-        ai_written_yes.button("👍", key="feedback_ai_written_yes")
-        ai_written_no.button("👎", key="feedback_ai_written_no")
+        ai_written_yes.button("👍", key="feedback_ai_written_yes", on_click=add_ai_written_feedback, args=(1, None))
+        ai_written_no.button("👎", key="feedback_ai_written_no", on_click=add_ai_written_feedback, args=(0, None))

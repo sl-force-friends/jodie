@@ -2,11 +2,14 @@ import json
 import re
 import time
 import urllib3
+from datetime import datetime
 from typing import Any
 
 import aiohttp
 import asyncio
+import gspread
 import streamlit as st
+from google.oauth2 import service_account
 
 BASE_ENDPOINT = st.secrets["JODIE_BACKEND_ENDPOINT"]
 JODIE_BACKEND_API_KEY = st.secrets["JODIE_BACKEND_API_KEY"]
@@ -216,3 +219,18 @@ async def _async_api_call_streaming(url, data):
         async with session.post(url, data=json.dumps(data), headers=JODIE_API_HEADERS) as response:
             async for chunk in response.content:
                 yield chunk
+
+def write_to_google_sheet(data) -> None:
+    """
+    Add to GSheet
+    """
+    credentials = service_account.Credentials.from_service_account_info(
+        json.loads(st.secrets["GCP_SERVICE_ACCOUNT"]),
+        scopes=["https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/drive"]
+    )
+    gc = gspread.authorize(credentials)
+    sh = gc.open_by_url(st.secrets["PRIVATE_GSHEETS_URL"])
+    worksheet = sh.get_worksheet(0)
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    worksheet.append_row([current_time, data])
